@@ -21,16 +21,17 @@ class QuotesSpider(scrapy.Spider):
         # authors
         authors = response.xpath("//div[@class='ds-dc_contributor_author-authority']/text()").extract_first()
         if not authors:
-            authors = str()
-            for contributor in response.xpath("//div[@class='simple-item-view-contributors item-page-field-wrapper table']/div/text()").getall():
-                authors += contributor
+            authors = "Missing authors"
 
         # language
         language = response.xpath("//h5[text()='Language']/parent::div/text()").getall()[1]
 
         # keywords
-        keywords = response.xpath('//*[@id="aspect_versioning_VersionNoticeTransformer_div_item-view"]/div/div[2]/div[2]/div[3]/text()').getall()[1],
-
+        keywords = response.xpath("//h5[text()='Keywords']/parent::div/text()").getall()
+        if not keywords:
+            keywords = "Missing keywords"
+        else:
+            keywords = keywords[1]
         # uri
         uri = response.xpath("//h5[text()='URI']/following-sibling::span/a/text()").get()
 
@@ -40,7 +41,7 @@ class QuotesSpider(scrapy.Spider):
         # pages
         pages = response.xpath("//h5[text()='Pages']/parent::*/text()").getall()
         if not pages:
-            pages = "I don't know"
+            pages = "Missing pages"
         else:
             pages = pages[1]
 
@@ -49,7 +50,7 @@ class QuotesSpider(scrapy.Spider):
             'name': name,
             'authors': authors,
             'language': language,
-            'Keywords': keywords[0],
+            'Keywords': keywords,
             'URI': uri,
             'Publication date and place': date_and_place,
             'Pages': pages
